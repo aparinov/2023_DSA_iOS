@@ -21,17 +21,20 @@ final class QuizViewModel: QuizViewModelProtocol {
     var viewActions: QuizViewModelViewActions
     
     private var subscription = Set<AnyCancellable>()
-    
     private let navController: UINavigationController
+    private let networkService: NetworkServiceProtocol
+    private let user: UserModel
     
-    private let interests = ["Математика", "Мобильная разработка", "ML", "Backend", "Большие данные", "Аналитика", "Дизайн", "Frontend"]
+//    private let interests = ["Математика", "Мобильная разработка", "ML", "Backend", "Большие данные", "Аналитика", "Дизайн", "Frontend"]
     
-    init(navController: UINavigationController) {
+    init(navController: UINavigationController, networkService: NetworkServiceProtocol, user: UserModel) {
         self.input = .init()
         self.output = .init()
         self.data = .init()
         self.viewActions = .init()
         self.navController = navController
+        self.networkService = networkService
+        self.user = user
         bind()
     }
     
@@ -40,35 +43,66 @@ final class QuizViewModel: QuizViewModelProtocol {
             guard let self = self else { return }
             switch lifecycle {
             case .didLoad:
-                self.data.quizArraySubject.send(self.interests)
+                self.getDetails()
             default: break
             }
         }.store(in: &subscription)
         
-        viewActions.showMainPageSubject.sink { [weak self] _ in
+        viewActions.tapOnAcceptButton.sink { [weak self] models in
             guard let self = self else { return }
-            let tabBar = UITabBarController()
-            let appDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-            
-            let mainVC = MainSceneAssembly.build(navigationController: self.navController)
-            let mainVCNC = UINavigationController(rootViewController: mainVC)
-            
-            let profileVC = ProfileSceneAssembly.build()
-            let profileVCNC = UINavigationController(rootViewController: profileVC)
-            
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.titleTextAttributes = [.foregroundColor : UIColor.white]
-            appearance.backgroundColor = UIColor(named: "hseNavBar")
-            
-            mainVCNC.navigationBar.standardAppearance = appearance;
-            mainVCNC.navigationBar.scrollEdgeAppearance = mainVCNC.navigationBar.standardAppearance
-            
-            profileVCNC.navigationBar.standardAppearance = appearance;
-            profileVCNC.navigationBar.scrollEdgeAppearance = profileVCNC.navigationBar.standardAppearance
-            
-            tabBar.viewControllers = [mainVCNC, profileVCNC]
-            appDelegate?.setRootViewController(tabBar)
+            for model in models {
+                let quizRespModel = QuizResponseModel(student_id: self.user.id, interest_id: model.id)
+                self.networkService.studentInterestsSend(with: quizRespModel) { result in
+                    switch result {
+                    case .success(let model):
+                        print(model)
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
+            }
+            self.openMainPages()
         }.store(in: &subscription)
+    }
+    
+    func getDetails() {
+        networkService.getAllTags { [weak self] result in
+            switch result {
+            case .success(let quizes):
+                let cellQuizes = quizes.map({ QuizCellModel(quiz: $0, isSelect: false) })
+                self?.data.quizArraySubject.send(cellQuizes)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func sendQuizModelsFromStudent(models: [QuizModel]) {
+        
+    }
+    
+    func openMainPages() {
+        let tabBar = UITabBarController()
+        let appDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+        
+        let mainVC = MainSceneAssembly.build(navigationController: self.navController, networkService: networkService, user: user)
+        let mainVCNC = UINavigationController(rootViewController: mainVC)
+        
+        let profileVC = ProfileSceneAssembly.build(networkService: networkService, user: user)
+        let profileVCNC = UINavigationController(rootViewController: profileVC)
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.titleTextAttributes = [.foregroundColor : UIColor.white]
+        appearance.backgroundColor = UIColor(named: "hseNavBar")
+        
+        mainVCNC.navigationBar.standardAppearance = appearance;
+        mainVCNC.navigationBar.scrollEdgeAppearance = mainVCNC.navigationBar.standardAppearance
+        
+        profileVCNC.navigationBar.standardAppearance = appearance;
+        profileVCNC.navigationBar.scrollEdgeAppearance = profileVCNC.navigationBar.standardAppearance
+        
+        tabBar.viewControllers = [mainVCNC, profileVCNC]
+        appDelegate?.setRootViewController(tabBar)
     }
 }

@@ -35,18 +35,17 @@ final class AuthViewModel: AuthViewModelProtocol {
     }
     
     func bind() {
-        output.buttonTabSubject.sink { [weak self] model in
-            let requestModel = AuthRequestModel(
-                login: model.login,
-                password: model.password
-            )
-            self?.loginOnELK(with: requestModel)
+        output.buttonTabSubject.sink { [weak self] user in
+            self?.loginOnELK(with: user)
         }.store(in: &subscriptions)
     }
     
-    func loginOnELK(with authModel: AuthRequestModel) {
-        print("\(authModel.login) \(authModel.password)")
-        let view = QuizSceneAssembly.build(navigationController: navController)
-        navController.pushViewController(view, animated: true)
+    func loginOnELK(with user: UserModel) {
+        print("\(user)")
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let view = CreateUserSceneAssembly.build(navBar: self.navController, user: user)
+            self.navController.pushViewController(view, animated: true)
+        }
     }
 }

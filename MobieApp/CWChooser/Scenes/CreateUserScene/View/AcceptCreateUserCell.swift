@@ -1,27 +1,22 @@
 //
-//  AcceptButtonViewCell.swift
+//  AcceptCreateUserCell.swift
 //  CWChooser
 //
-//  Created by Виктор Поволоцкий on 19.02.2023.
+//  Created by Виктор Поволоцкий on 15.03.2023.
 //
 
 import Foundation
 import UIKit
 import Combine
 
-final class AcceptButtonViewCell: UITableViewCell {
-    enum Style: String {
-        case entryOnProject = "Запись на проект"
-        case cancelEntry = "Отмена записи"
-    }
-    
+final class AcceptCreateUserCell: UITableViewCell {
     typealias LOC = Localization.QuizViewController
     private let grid = Grid()
     private var tapOnButtonSubject: PassthroughSubject<Void, Never>?
-    var style: Style = .entryOnProject
     
     private let button: UIButton = {
         let button = UIButton()
+        button.backgroundColor = UIColor(named: "HseBlue")
         button.setTitle(LOC.acceptButton, for: .normal)
         button.titleLabel?.numberOfLines = 0
         button.addTarget(self, action: #selector(tapOnAcceptButton), for: .touchUpInside)
@@ -42,37 +37,12 @@ final class AcceptButtonViewCell: UITableViewCell {
         self.tapOnButtonSubject = subject
     }
     
-    func configureCell(style: Style) {
-        switch style{
-        case .entryOnProject:
-            self.style = .entryOnProject
-            button.backgroundColor = UIColor(named: "HseBlue")
-        case .cancelEntry:
-            self.style = .cancelEntry
-            button.backgroundColor = UIColor.systemRed
-        }
-        button.setTitle(style.rawValue, for: .normal)
-    }
-    
-    func changeStyle(style: Style) {
-        switch style{
-        case .entryOnProject:
-            self.style = .entryOnProject
-            button.backgroundColor = UIColor(named: "HseBlue")
-            setTitle(title: style.rawValue)
-        case .cancelEntry:
-            self.style = .cancelEntry
-            button.backgroundColor = UIColor.systemRed
-            setTitle(title: style.rawValue)
-        }
-    }
-    
-    func setTitle(title: String) {
+    func configureCell(title: String) {
         button.setTitle(title, for: .normal)
     }
 }
 
-private extension AcceptButtonViewCell {
+private extension AcceptCreateUserCell {
     func setupLayout() {
         addSubview(button)
         
@@ -81,9 +51,10 @@ private extension AcceptButtonViewCell {
         
         NSLayoutConstraint.activate([
             button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: grid.miniOffset),
-            button.topAnchor.constraint(equalTo: topAnchor),
+            button.topAnchor.constraint(equalTo: topAnchor, constant: grid.xxlargeOffset),
             button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -grid.miniOffset),
-            button.bottomAnchor.constraint(equalTo: bottomAnchor)
+            button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -grid.xxlargeOffset),
+            button.heightAnchor.constraint(equalToConstant: 45)
         ])
     }
     

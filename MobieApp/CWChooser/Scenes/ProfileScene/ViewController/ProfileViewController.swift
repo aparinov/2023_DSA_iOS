@@ -7,10 +7,14 @@
 
 import Foundation
 import UIKit
+import Combine
 
 final class ProfileViewController: UIViewController {
     
     private let viewModel: ProfileViewModel?
+    private var userInfo: UserInfoResponse?
+    private var subscriptions = Set<AnyCancellable>()
+    private var interestsString = ""
     
     private let headerView: ProfileHeaderView = {
         let headerView = ProfileHeaderView()
@@ -39,6 +43,9 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavBar()
+        setupLayout()
+        viewModel?.viewActions.lifecycle.send(.didLoad)
+        bind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,7 +56,6 @@ final class ProfileViewController: UIViewController {
     init(viewModel: ProfileViewModel?) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        setupLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -59,35 +65,57 @@ final class ProfileViewController: UIViewController {
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        5
+        4
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let aboutMeCell = tableView.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath) as? ProfileInfoViewCell,
-           indexPath.row == 0 {
-            aboutMeCell.configureItem(title: "О себе", subTitle: "Я люблю эпл и писать для него, помогите иначе я рано или поздно уеду в калифорнию и стану пить мартини на берегу океана")
-            return aboutMeCell
-        } else if let facultyCell = tableView.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath) as? ProfileInfoViewCell,
-                  indexPath.row == 2 {
-            facultyCell.configureItem(title: "Факультет", subTitle: "Факультет компьютерных наук")
+        if let facultyCell = tableView.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath) as? ProfileInfoViewCell,
+                  indexPath.row == 1 {
+            facultyCell.configureItem(title: "Факультет", subTitle: userInfo?.group ?? "")
             return facultyCell
         } else if let emailCell = tableView.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath) as? ProfileInfoViewCell,
-                  indexPath.row == 3 {
-            emailCell.configureItem(title: "Email-адрес", subTitle: "arteezycat@gmail.com")
+                  indexPath.row == 2 {
+            emailCell.configureItem(title: "Email-адрес", subTitle: userInfo?.email ?? "")
             return emailCell
         } else if let interestCell = tableView.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath) as? ProfileInfoViewCell,
-                  indexPath.row == 1 {
-            interestCell.configureItem(title: "Интересы", subTitle: "Фронтенд, бэкенд, машинное обучение, дизайн, прочие интересные приколы")
+                  indexPath.row == 0 {
+            interestCell.configureItem(title: "Интересы", subTitle: interestsString)
             return interestCell
         } else {
             let telephoneNumberCell = tableView.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath) as! ProfileInfoViewCell
-            telephoneNumberCell.configureItem(title: "Номер телефона", subTitle: "+7-938-339-03-87")
+            telephoneNumberCell.configureItem(title: "Номер телефона", subTitle: userInfo?.phone_number ?? "")
             return telephoneNumberCell
         }
     }
 }
 
 private extension ProfileViewController {
+    func bind() {
+        viewModel?.data.userInfoDataSubject
+            .sink { [weak self] user in
+                self?.userInfo = user
+                DispatchQueue.main.async {
+                    self?.headerView.setupHeader(
+                        type: "СТУДЕНТ",
+                        title: user.name,
+                        subtitle: "Бакалавриат \(user.faculty)",
+                        image: nil
+                    )
+                    self?.tableView.reloadData()
+                }
+            }
+            .store(in: &subscriptions)
+        
+        viewModel?.data.userInterestsSubject
+            .sink { [weak self] interests in
+                self?.interestsString = interests
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+            }
+            .store(in: &subscriptions)
+    }
+    
     func setupNavBar() {
         title = "Профиль"
     }

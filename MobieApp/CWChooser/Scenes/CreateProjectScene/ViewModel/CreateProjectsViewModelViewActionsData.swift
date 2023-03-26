@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 protocol CreateProjectsViewModelViewActionsData {
     var viewActions: CreateProjectsViewModelViewActions { get }
@@ -13,6 +14,10 @@ protocol CreateProjectsViewModelViewActionsData {
 }
 
 
-struct CreateProjectsViewModelViewActions {}
+struct CreateProjectsViewModelViewActions {
+    let lifecycleSubject = PassthroughSubject<Lifecycle, Never>()
+}
 
-struct CreateProjectsViewModelData {}
+struct CreateProjectsViewModelData {
+    let sendProjectModelSubject = PassthroughSubject<ProjectRequest, Never>()
+}

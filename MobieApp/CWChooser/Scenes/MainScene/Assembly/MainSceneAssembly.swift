@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 enum MainSceneAssembly {
-    static func build(navigationController: UINavigationController) -> MainViewController {
-        let viewModel =  MainViewModel(navController: navigationController)
+    static func build(navigationController: UINavigationController, networkService: NetworkServiceProtocol, user: UserModel) -> MainViewController {
+        let viewModel =  MainViewModel(navController: navigationController, networkService: networkService, user: user)
         let view = MainViewController(viewModel: viewModel)
         return view
     }

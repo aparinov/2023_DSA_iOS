@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 protocol ProfileViewModelViewActionsData {
     var viewActions: ProfileViewModelViewActions { get }
@@ -13,6 +14,12 @@ protocol ProfileViewModelViewActionsData {
     var data: ProfileViewModelData { get }
 }
 
-struct ProfileViewModelViewActions {}
+struct ProfileViewModelViewActions {
+    let lifecycle = PassthroughSubject<Lifecycle, Never>()
+}
 
-struct ProfileViewModelData {}
+struct ProfileViewModelData {
+    let userInfoDataSubject: AnyPublisher<UserInfoResponse, Never>
+    
+    let userInterestsSubject: AnyPublisher<String, Never>
+}

@@ -56,11 +56,11 @@ final class SegmentDataCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func getSegmentInfo() -> SegmentDateModel {
-        let type: SegmentDateModel.TypeProject = segmentTypeControl.selectedSegmentIndex == 0 ? .research : .praktic
+    func getSegmentInfo() -> Project.SegmentDateModel {
+        let type: Project.SegmentDateModel.TypeProject = segmentTypeControl.selectedSegmentIndex == 0 ? .research : .praktic
         let dateSub = dateSubmission.date
         let dateApp = dateApplication.date
-        return SegmentDateModel(projectType: type.rawValue, submissionDate: dateSub, applicationDate: dateApp)
+        return Project.SegmentDateModel(projectType: type.rawValue, submissionDate: dateSub, applicationDate: dateApp)
     }
 }
 

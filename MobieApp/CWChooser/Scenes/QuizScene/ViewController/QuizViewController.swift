@@ -12,7 +12,8 @@ import Combine
 final class QuizViewController: UIViewController {
     
     private let viewModel: QuizViewModelProtocol?
-    private var interestsArray: [String] = .init()
+    private var interestsArray: [QuizCellModel] = .init()
+    private var resultUserInterestsArray: [QuizModel] = .init()
     var rowWhichAreChecked = [NSIndexPath]()
     private var subscription = Set<AnyCancellable>()
    
@@ -21,6 +22,8 @@ final class QuizViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(QuizCheckBoxCell.self, forCellReuseIdentifier: "quiz")
         tableView.register(AcceptButtonViewCell.self, forCellReuseIdentifier: "accept")
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsMultipleSelection = true
@@ -29,9 +32,9 @@ final class QuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel?.viewActions.lifeCycleSubject.send(.didLoad)
         setupLayout()
         bind()
-        viewModel?.viewActions.lifeCycleSubject.send(.didLoad)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -59,37 +62,42 @@ extension QuizViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row < interestsArray.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: "quiz", for: indexPath) as! QuizCheckBoxCell 
-            cell.configureItem(title: interestsArray[indexPath.row])
+            cell.configureItem(model: interestsArray[indexPath.row])
             cell.backgroundColor = UIColor(named: "hseBackground")
             cell.selectionStyle = .none
-            let isRowChecked = rowWhichAreChecked.contains(indexPath as NSIndexPath)
-            cell.checkBoxButton.isChecked = isRowChecked
-            cell.checkBoxButton.buttonClicked(sender: cell.checkBoxButton)
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "accept") as! AcceptButtonViewCell
             cell.setSubject(subject: viewModel?.viewActions.showMainPageSubject)
             cell.backgroundColor = UIColor(named: "hseBackground")
+            cell.configureCell(style: .entryOnProject)
+            cell.setTitle(title: "Далее")
             cell.selectionStyle = .none
             return cell
         }
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath as IndexPath) as! QuizCheckBoxCell
-        let isRowChecked = rowWhichAreChecked.contains(indexPath as NSIndexPath)
-        if isRowChecked == false {
-            cell.checkBoxButton.isChecked = true
-            cell.checkBoxButton.buttonClicked(sender: cell.checkBoxButton)
+        if let _ = tableView.cellForRow(at: indexPath) as? AcceptButtonViewCell {
+            viewModel?.viewActions.tapOnAcceptButton.send(resultUserInterestsArray)
+        } else {
+            let cell = tableView.cellForRow(at: indexPath as IndexPath) as! QuizCheckBoxCell
+            cell.setCheckImg()
+            cell.quizModel.isSelect = true
+            resultUserInterestsArray.append(cell.quizModel.quiz)
         }
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath as IndexPath) as! QuizCheckBoxCell
-        cell.checkBoxButton.isChecked = false
-        cell.checkBoxButton.buttonClicked(sender: cell.checkBoxButton)
-        if let checkedItemIndex = rowWhichAreChecked.firstIndex(of: indexPath as NSIndexPath) {
-            rowWhichAreChecked.remove(at: checkedItemIndex)
+        if cell.quizModel.isSelect {
+            cell.setUncheckImg()
+            cell.quizModel.isSelect = false
+            resultUserInterestsArray.removeAll(where: { $0.name == cell.quizModel.quiz.name })
         }
     }
 }
@@ -109,12 +117,15 @@ private extension QuizViewController {
     }
     
     func setupNavBar() {
-        title = Localization.QuizViewController.navBarTitle
+        title = "Интересы"
     }
     
     func bind() {
         viewModel?.data.quizArraySubject.sink(receiveValue: { [weak self] interests in
             self?.interestsArray = interests
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
         }).store(in: &subscription)
     }
 }

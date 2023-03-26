@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct AuthRequestModel: Codable {
+public struct AuthRequestModel: Codable {
     let login: String
     let password: String
 }

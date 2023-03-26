@@ -9,8 +9,12 @@ import Foundation
 import UIKit
 
 enum QuizSceneAssembly {
-    static func build(navigationController: UINavigationController) -> QuizViewController {
-        let viewModel =  QuizViewModel(navController: navigationController)
+    static func build(
+        navigationController: UINavigationController,
+        networkService: NetworkServiceProtocol,
+        user: UserModel
+    ) -> QuizViewController {
+        let viewModel =  QuizViewModel(navController: navigationController, networkService: networkService, user: user)
         let view = QuizViewController(viewModel: viewModel)
         return view
     }

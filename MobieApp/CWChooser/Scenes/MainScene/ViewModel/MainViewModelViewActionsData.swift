@@ -15,9 +15,13 @@ protocol MainViewModelViewActionsData {
 }
 
 struct MainViewModelActions {
-    let tapOnProjectCellSubject = PassthroughSubject<UINavigationController, Never>()
+    let lifecycle = PassthroughSubject<Lifecycle, Never>()
+    
+    let tapOnProjectCellSubject = PassthroughSubject<(Project, UINavigationController), Never>()
     
     let tapOnAddButtonSubject = PassthroughSubject<UINavigationController, Never>()
 }
 
-struct MainViewModelData {}
+struct MainViewModelData {
+    let projectsSendPublisher: AnyPublisher<[Project], Never>
+}

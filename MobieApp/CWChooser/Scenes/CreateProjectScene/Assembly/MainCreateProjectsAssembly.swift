@@ -9,8 +9,9 @@ import Foundation
 import UIKit
 
 enum MainCreateProjectsAssembly {
-    static func build() -> UIViewController {
-        let view = CreateProjectsViewController()
+    static func build(networkService: NetworkServiceProtocol) -> UIViewController {
+        let viewModel = CreateProjectsViewModel(networkService: networkService)
+        let view = CreateProjectsViewController(viewModel: viewModel)
         return view
     }
 }

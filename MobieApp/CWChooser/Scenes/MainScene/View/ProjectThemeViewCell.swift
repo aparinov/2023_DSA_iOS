@@ -11,6 +11,7 @@ import UIKit
 final class ProjectThemeViewCell: UITableViewCell {
     
     private let grid = Grid()
+    var projectModel = Project(id: 0, title: "", description: "", project_type: "", supervisor: "", number_of_students: 0, submission_deadline: "", application_deadline: "", application_form: "", status: "")
     
     private let viewForCellNumber: UILabel = {
         let label = UILabel()
@@ -94,6 +95,15 @@ final class ProjectThemeViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func configureCell(numberCell: Int, model: Project) {
+        self.projectModel = model
+        self.titleNameLabel.text = model.title
+        self.projectSectionLabel.text = model.project_type
+        self.teacherNameLabel.text = model.supervisor
+        self.viewForCellNumber.text = "\(numberCell)"
+        self.deadlineLabel.text = "\(model.submission_deadline)/\(model.application_deadline)"
+    }
 }
 
 private extension ProjectThemeViewCell {
@@ -143,7 +153,8 @@ private extension ProjectThemeViewCell {
             teacherImage.widthAnchor.constraint(equalToConstant: 20),
             
             deadlineLabel.leadingAnchor.constraint(equalTo: clockImage.trailingAnchor, constant: grid.largeOffset),
-            deadlineLabel.topAnchor.constraint(equalTo: teacherNameLabel.bottomAnchor, constant: 22)
+            deadlineLabel.topAnchor.constraint(equalTo: teacherNameLabel.bottomAnchor, constant: 22),
+            deadlineLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
         ])
     }
 }

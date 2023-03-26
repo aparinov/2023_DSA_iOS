@@ -19,8 +19,10 @@ struct QuizViewModelViewActions {
     let lifeCycleSubject = PassthroughSubject<Lifecycle, Never>()
     
     let showMainPageSubject = PassthroughSubject<Void, Never>()
+    
+    let tapOnAcceptButton = PassthroughSubject<[QuizModel], Never>()
 }
 
 struct QuizViewModelData {
-    let quizArraySubject = PassthroughSubject<[String], Never>()
+    let quizArraySubject = PassthroughSubject<[QuizCellModel], Never>()
 }

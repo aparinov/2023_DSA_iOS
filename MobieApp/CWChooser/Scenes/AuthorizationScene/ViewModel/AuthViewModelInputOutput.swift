@@ -17,7 +17,7 @@ protocol AuthViewModelInputOutput {
 /// Выходные данные
 struct AuthViewModelOutput {
     /// Нажатие на кнопку входа
-    var buttonTabSubject = PassthroughSubject<(login: String, password: String), Never>()
+    var buttonTabSubject = PassthroughSubject<UserModel, Never>()
 }
 
 /// Входные данные
