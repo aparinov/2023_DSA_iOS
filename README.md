@@ -95,6 +95,7 @@ $ python3 manage.py migrate
 Например, для сущности проекта
 
 Модель в models.py выглядит так:
+
 class project(models.Model):
     title = models.CharField("title", max_length=255)
     description = models.CharField("description", max_length=5000)
@@ -111,6 +112,7 @@ class project(models.Model):
         db_table='project'
         
 Сериализатор в serializers.py выглядит так:
+
 class projectSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -118,19 +120,23 @@ class projectSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
         
  Представления во views.py выглядят так:
+ 
  Для создания проекта
+ 
  class projectCreate(generics.CreateAPIView):
     # API endpoint that allows creation of a new customer
     queryset = project.objects.all(),
     serializer_class = projectSerializer
 
 Для списка проектов
+
 class projectList(generics.ListAPIView):
     # API endpoint that allows customer to be viewed.
     queryset = project.objects.all()
     serializer_class = projectSerializer
 
 Для просмотра, редактирования и удаления конкретного проекта
+
 class projectDetail(generics.RetrieveUpdateDestroyAPIView):
     # API endpoint that returns a single customer by pk.
     queryset = project.objects.all()
@@ -139,16 +145,20 @@ class projectDetail(generics.RetrieveUpdateDestroyAPIView):
 Ссылки в urls.py выглядят так:
 
 Для создания нового проекта
+
 path('project_create/', projectCreate.as_view()),
  
 Для просмотра списка проектов
+
 path('projects/', projectList.as_view()),
 
 Для просмотра, редактирования, удаления конкретного проекта по ключу его идентификатора
+
 path('projects/<int:pk>/', projectDetail.as_view()),
 
 #### Структура базы данных
-База данных состоит из некоторого количества таблиц, часть из которых генерируется автоматически. Для нас представляет  интерес та часть, которая написана вручную и отражает объекты в модели системы. Также в системе присутствуют срезы данных, представляющие собой агрегированные данные из нескольких таблиц. Все они перечислены далее, и их схема представлена на рисунках.
+База данных состоит из некоторого количества таблиц, часть из которых генерируется автоматически. Для нас представляет  интерес та часть, которая написана вручную и отражает объекты в модели системы. Также в системе присутствуют срезы данных, представляющие собой агрегированные данные из нескольких таблиц. 
+Все они перечислены далее, и их схема представлена на рисунках.
 * Таблица student - это таблица студентов, содержит только идентификаторы и email, используемый пользователем для авторизации. Связана с автоматически генерируемой таблицей пользователей user по идентификатору. Триггер на создание студента в таблице прикреплен к авторизации пользователя в первый раз.
 * Таблица project - это таблица проектов, содержащее всю информацию о проектах кроме тэгов(технических требований) - кратких описаний технологий, областей знаний и навыков, требуемых от студентов.
 * Таблица technical_requirements - это таблица, содержащая идентификаторы тэгов и их названия. Пользователь в приложении не имеет возможности создавать эти тэги, они настраиваются администратором через веб-интерфейс (или вносятся напрямую в базу данных).
