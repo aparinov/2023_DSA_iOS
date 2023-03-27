@@ -104,6 +104,7 @@ class student_suggestions(models.Model):
     application_form = models.CharField("application_form", max_length=255)
     status = models.CharField("status", max_length=20)
     student_id =  models.IntegerField("student_id", primary_key = True)
+    id =  models.IntegerField("project_id")
     
     class Meta:
         managed = False
