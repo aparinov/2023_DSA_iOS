@@ -67,21 +67,21 @@
 ##### Запустить сервер
 из директории верхнего уровня (в которой расположена директория env) введите команду: 
 
-$ source env/bin/activate
+    $ source env/bin/activate
 
 спуститесь в директорию nate_kp (где расположен файл manage.py) и введите команду:
 
-$ python3 manage.py runserver 0.0.0.0:8000
+    $ python3 manage.py runserver 0.0.0.0:8000
 
 Эта команда соответствует запуску сервера на порте 8000.
 ##### Синхронизировать измененную модель данных с базой данных Postgres
 из директории nate_kp (где расположен файл manage.py) введите команду:
 
-$ python3 manage.py makemigrations
+    $ python3 manage.py makemigrations
 
 эта команда покажет вам существующие изменения. Если есть изменения и вы хотите их применить, введите команду:
 
-$ python3 manage.py migrate
+    $ python3 manage.py migrate
 ##### Добавить новую сущность в базу данных с помощью серверного представления
 Сущности располагаются в файле models.py. Добавьте туда требуемый класс, укажите его поля, метаинформацию (название таблицы. Она не обязательно должна существовать, если ее нет - она сгенерируется автоматически). 
 
@@ -96,65 +96,65 @@ $ python3 manage.py migrate
 
 Модель в models.py выглядит так:
 
-class project(models.Model):
-    title = models.CharField("title", max_length=255)
-    description = models.CharField("description", max_length=5000)
-    project_type = models.CharField("project_type", max_length=20)
-    supervisor = models.CharField("supervisor", max_length=100, default = "")
-    number_of_students = models.IntegerField("number_of_students")
-    submission_deadline = models.CharField("submission_deadline", max_length = 20)
-    application_deadline = models.CharField("application_deadline", max_length = 20)
-    application_form = models.CharField("application_form", max_length=255)
-    status = models.CharField("status", max_length=20)
-    
-    class Meta:
-        managed = False
-        db_table='project'
+    class project(models.Model):
+        title = models.CharField("title", max_length=255)
+        description = models.CharField("description", max_length=5000)
+        project_type = models.CharField("project_type", max_length=20)
+        supervisor = models.CharField("supervisor", max_length=100, default = "")
+        number_of_students = models.IntegerField("number_of_students")
+        submission_deadline = models.CharField("submission_deadline", max_length = 20)
+        application_deadline = models.CharField("application_deadline", max_length = 20)
+        application_form = models.CharField("application_form", max_length=255)
+        status = models.CharField("status", max_length=20)
+
+        class Meta:
+            managed = False
+            db_table='project'
         
 Сериализатор в serializers.py выглядит так:
 
-class projectSerializer(serializers.ModelSerializer):
+    class projectSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = project
-        fields = ['id', 'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
+        class Meta:
+            model = project
+            fields = ['id', 'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
         
  Представления во views.py выглядят так:
  
  Для создания проекта
  
- class projectCreate(generics.CreateAPIView):
-    # API endpoint that allows creation of a new customer
-    queryset = project.objects.all(),
-    serializer_class = projectSerializer
+     class projectCreate(generics.CreateAPIView):
+        # API endpoint that allows creation of a new customer
+        queryset = project.objects.all(),
+        serializer_class = projectSerializer
 
 Для списка проектов
 
-class projectList(generics.ListAPIView):
-    # API endpoint that allows customer to be viewed.
-    queryset = project.objects.all()
-    serializer_class = projectSerializer
+    class projectList(generics.ListAPIView):
+        # API endpoint that allows customer to be viewed.
+        queryset = project.objects.all()
+        serializer_class = projectSerializer
 
 Для просмотра, редактирования и удаления конкретного проекта
 
-class projectDetail(generics.RetrieveUpdateDestroyAPIView):
-    # API endpoint that returns a single customer by pk.
-    queryset = project.objects.all()
-    serializer_class = projectSerializer
-    
+    class projectDetail(generics.RetrieveUpdateDestroyAPIView):
+        # API endpoint that returns a single customer by pk.
+        queryset = project.objects.all()
+        serializer_class = projectSerializer
+
 Ссылки в urls.py выглядят так:
 
 Для создания нового проекта
 
-path('project_create/', projectCreate.as_view()),
+    path('project_create/', projectCreate.as_view()),
  
 Для просмотра списка проектов
 
-path('projects/', projectList.as_view()),
+    path('projects/', projectList.as_view()),
 
 Для просмотра, редактирования, удаления конкретного проекта по ключу его идентификатора
 
-path('projects/<int:pk>/', projectDetail.as_view()),
+    path('projects/<int:pk>/', projectDetail.as_view()),
 
 #### Структура базы данных
 База данных состоит из некоторого количества таблиц, часть из которых генерируется автоматически. Для нас представляет  интерес та часть, которая написана вручную и отражает объекты в модели системы. Также в системе присутствуют срезы данных, представляющие собой агрегированные данные из нескольких таблиц. 
@@ -183,29 +183,36 @@ path('projects/<int:pk>/', projectDetail.as_view()),
 #### Запросы
 ##### Авторизации
 * http://84.201.135.211:8000/ - домашняя страница, вход на сайт и страницу для начала авторизации, POST запрос без параметров
-* admin/ - вход в аккаунт администратора, POST запрос формата 
-{
-    "username":"username", 
-    "password":"password"
-}
+* admin/ - вход в аккаунт администратора, 
+POST запрос формата 
 
-* accounts/login/ - авторизация через доступные сторонние сервисы, POST запрос формата 
-{
-    "username":"username",
-    "password":"password"
-}
+    {
+        "username":"username", 
+        "password":"password"
+    }
+
+* accounts/login/ - авторизация через доступные сторонние сервисы, 
+POST запрос формата 
+
+    {
+        "username":"username",
+        "password":"password"
+    }
 
 * accounts/yandex/login/?process=login/ -  для переадресации на авторизацию через Yandex&HSE, POST запрос без параметров
 * hse-auth/ - для переадресации на авторизацию через аккаунт ЕЛК, пока не работает, POST запрос без параметров
-* get_username - GET запрос для получения данных об авторизованном в сессии пользователе, выдает json объект формата 
-{
-    "id": 18,
-    "username": "ndzubareva@edu.hse.ru"
-}
+* get_username - GET запрос для получения данных об авторизованном в сессии пользователе, 
+выдает json объект формата 
+
+    {
+        "id": 18,
+        "username": "ndzubareva@edu.hse.ru"
+    }
 
 ##### Работа со студентами:
 * students/ - просмотр всех студентов, GET запрос, выдает json объект формата 
 \[
+
     {
         "id": 18,
         "email": "ndzubareva@edu.hse.ru"
@@ -218,34 +225,40 @@ path('projects/<int:pk>/', projectDetail.as_view()),
 
 * students/int:pk/ - просмотр, редактирование, удаление конкретного студента
 GET запрос для получения информации, возвращающий объект 
-{
-    "id": 19,
-    "email": "vapovolotskiy@edu.hse.ru"
-}
+
+    {
+        "id": 19,
+        "email": "vapovolotskiy@edu.hse.ru"
+    }
 
 PUT запрос для редактирования в формате
-{
-    "email": "vapovolotskiy@edu.hse.ru"
-}
+
+    {
+        "email": "vapovolotskiy@edu.hse.ru"
+    }
 
 DELETE запрос формата
-{
-    "id": 19,
-    "email": "vapovolotskiy@edu.hse.ru"
-}
 
-* student_info_create/ - создание подробной информации о студенте, POST запрос формата 
-{
-   "student_id": 19,
-   "name": "Поволоцкий Виктор",
-   "group": "ФКН",
-   "faculty": "БПИ196",
-   "year": 4,
-   "phone_number": "+79283390387"
-}
+    {
+        "id": 19,
+        "email": "vapovolotskiy@edu.hse.ru"
+    }
+
+* student_info_create/ - создание подробной информации о студенте, 
+POST запрос формата 
+
+    {
+       "student_id": 19,
+       "name": "Поволоцкий Виктор",
+       "group": "ФКН",
+       "faculty": "БПИ196",
+       "year": 4,
+       "phone_number": "+79283390387"
+    }
 
 * student_infos/ - просмотр всей инфо по студентам, GET запрос, возврат формата 
 \[
+
     {
        "id": 107,
        "student_id": 19,
@@ -268,45 +281,51 @@ DELETE запрос формата
 
 * student_infos/int:pk/ - просмотр, редактирование, удаление инфо конкретного студента
 GET запрос для получения информации, возвращающий объект 
-{
-   "id": 108,
-   "student_id": 20,
-   "name": "Мостачев Андрей",
-   "group": "ФКН",
-   "faculty": "БПИ196",
-   "year": 4,
-   "phone_number": "+715156279"
-}
+
+    {
+       "id": 108,
+       "student_id": 20,
+       "name": "Мостачев Андрей",
+       "group": "ФКН",
+       "faculty": "БПИ196",
+       "year": 4,
+       "phone_number": "+715156279"
+    }
 
 PUT запрос для редактирования в формате
-{
-   "student_id": 20,
-   "name": "Мостачев Андрей",
-   "group": "ФКН",
-   "faculty": "БПИ196",
-   "year": 4,
-   "phone_number": "+715156279"
-}
+
+    {
+       "student_id": 20,
+       "name": "Мостачев Андрей",
+       "group": "ФКН",
+       "faculty": "БПИ196",
+       "year": 4,
+       "phone_number": "+715156279"
+    }
 
 DELETE запрос формата
-{
-   "id": 108,
-   "student_id": 20,
-   "name": "Мостачев Андрей",
-   "group": "ФКН",
-   "faculty": "БПИ196",
-   "year": 4,
-   "phone_number": "+715156279"
-}
+
+    {
+       "id": 108,
+       "student_id": 20,
+       "name": "Мостачев Андрей",
+       "group": "ФКН",
+       "faculty": "БПИ196",
+       "year": 4,
+       "phone_number": "+715156279"
+    }
 
 ##### Работа с тегами
-* requirements_create/ - создание тега, POST запрос формата 
-{
-    "name" : "Swift"
-}
+* requirements_create/ - создание тега, 
+POST запрос формата 
+    
+    {
+        "name" : "Swift"
+    }
 
 * requirements/ - просмотр всех тегов, GET запрос формата 
 \[
+
     {
         "id": 5,
         "name": "Мобильная разработка"
@@ -319,38 +338,44 @@ DELETE запрос формата
 
 * requirements/int:pk/ - просмотр, редактирование, удаление конкретного тега
 GET запрос для получения информации, возвращающий объект 
-{
-    "id": 5,
-    "name": "Мобильная разработка"
-}
+
+    {
+        "id": 5,
+        "name": "Мобильная разработка"
+    }
 
 PUT запрос для редактирования в формате
-{
-    "name" : "Swift"
-}
+
+    {
+        "name" : "Swift"
+    }
 
 DELETE запрос формата
-{
-    "id": 5,
-    "name": "Мобильная разработка"
-}
+
+    {
+        "id": 5,
+        "name": "Мобильная разработка"
+    }
 
 ##### Работа с проектами:
-* project_create/ -	создание проекта, POST запрос формата
-{
-    "title": "Приложение для интраоперационного мультилингвального картирования речи",
-    "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
-    "project_type": "Проектный",
-    "supervisor": "Зонтов Юрий Владимирович",
-    "number_of_students": 1,
-    "submission_deadline": "2023-08-01",
-    "application_deadline": "2022-10-01",
-    "application_form": "https://www.hse.ru/neuroling/",
-    "status": "набор завершен"
-}
+* project_create/ -	создание проекта, 
+POST запрос формата
+
+    {
+        "title": "Приложение для интраоперационного мультилингвального картирования речи",
+        "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
+        "project_type": "Проектный",
+        "supervisor": "Зонтов Юрий Владимирович",
+        "number_of_students": 1,
+        "submission_deadline": "2023-08-01",
+        "application_deadline": "2022-10-01",
+        "application_form": "https://www.hse.ru/neuroling/",
+        "status": "набор завершен"
+    }
 
 * projects/ - просмотр всех проектов, GET запрос формата 
 \[
+
     {
         "id": 4,
         "title": "Приложение для интраоперационного мультилингвального картирования речи",
@@ -379,57 +404,63 @@ DELETE запрос формата
 
 * projects/int:pk/ - просмотр, редактирование, удаление конкретного проекта
 GET запрос для получения информации, возвращающий объект 
-{
-    "id": 4,
-    "title": "Приложение для интраоперационного мультилингвального картирования речи",
-    "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
-    "project_type": "Проектный",
-    "supervisor": "Зонтов Юрий Владимирович",
-    "number_of_students": 1,
-    "submission_deadline": "2023-08-01",
-    "application_deadline": "2022-10-01",
-    "application_form": "https://www.hse.ru/neuroling/",
-    "status": "набор завершен"
-}
+
+    {
+        "id": 4,
+        "title": "Приложение для интраоперационного мультилингвального картирования речи",
+        "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
+        "project_type": "Проектный",
+        "supervisor": "Зонтов Юрий Владимирович",
+        "number_of_students": 1,
+        "submission_deadline": "2023-08-01",
+        "application_deadline": "2022-10-01",
+        "application_form": "https://www.hse.ru/neuroling/",
+        "status": "набор завершен"
+    }
 
 PUT запрос для редактирования в формате
-{
-    "title": "Приложение для интраоперационного мультилингвального картирования речи",
-    "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
-    "project_type": "Проектный",
-    "supervisor": "Зонтов Юрий Владимирович",
-    "number_of_students": 1,
-    "submission_deadline": "2023-08-01",
-    "application_deadline": "2022-10-01",
-    "application_form": "https://www.hse.ru/neuroling/",
-    "status": "набор завершен"
-}
+
+    {
+        "title": "Приложение для интраоперационного мультилингвального картирования речи",
+        "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
+        "project_type": "Проектный",
+        "supervisor": "Зонтов Юрий Владимирович",
+        "number_of_students": 1,
+        "submission_deadline": "2023-08-01",
+        "application_deadline": "2022-10-01",
+        "application_form": "https://www.hse.ru/neuroling/",
+        "status": "набор завершен"
+    }
 
 DELETE запрос формата
-{
-    "id": 4,
-    "title": "Приложение для интраоперационного мультилингвального картирования речи",
-    "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
-    "project_type": "Проектный",
-    "supervisor": "Зонтов Юрий Владимирович",
-    "number_of_students": 1,
-    "submission_deadline": "2023-08-01",
-    "application_deadline": "2022-10-01",
-    "application_form": "https://www.hse.ru/neuroling/",
-    "status": "набор завершен"
-}
+
+    {
+        "id": 4,
+        "title": "Приложение для интраоперационного мультилингвального картирования речи",
+        "description": "Приложение для автоматизации процесса проведения теста на называние - процедуры, проводимой во время операций на мозге с целью предотвращения потери речи. Требуется разработать кроссплатформенное мобильное приложение (в первой версии для платформы Android), которое бы позволяло добавлять пациентов для тестирования, проводить тестирование (с показом изображений, записью ответов тестируемого), проверять ответы.",
+        "project_type": "Проектный",
+        "supervisor": "Зонтов Юрий Владимирович",
+        "number_of_students": 1,
+        "submission_deadline": "2023-08-01",
+        "application_deadline": "2022-10-01",
+        "application_form": "https://www.hse.ru/neuroling/",
+        "status": "набор завершен"
+    }
 
 ##### Работа со связями:
 
-* application_create/ -	создание заявки на проект, POST запрос формата
-{
-    "project_id": 13,
-    "student_id": 19,
-    "status": "Заявка отменена"
-}
+* application_create/ -	создание заявки на проект, 
+POST запрос формата
+
+    {
+        "project_id": 13,
+        "student_id": 19,
+        "status": "Заявка отменена"
+    }
 
 * applications/	- просмотр всех заявок, GET запрос формата 
 \[
+
     {
         "id": 65,
         "project_id": 10,
@@ -446,36 +477,42 @@ DELETE запрос формата
 
 * applications/int:pk/	- просмотр, редактирование, удаление конкретной заявки
 GET запрос для получения информации, возвращающий объект 
-{
-    "id": 67,
-    "project_id": 13,
-    "student_id": 19,
-    "status": "Заявка отменена"
-}
+
+    {
+        "id": 67,
+        "project_id": 13,
+        "student_id": 19,
+        "status": "Заявка отменена"
+    }
 
 PUT запрос для редактирования в формате
-{
-    "project_id": 13,
-    "student_id": 19,
-    "status": "Заявка отменена"
-}
+
+    {
+        "project_id": 13,
+        "student_id": 19,
+        "status": "Заявка отменена"
+    }
 
 DELETE запрос формата
-{
-    "id": 67,
-    "project_id": 13,
-    "student_id": 19,
-    "status": "Заявка отменена"
-}
 
-* requirements_stack_create/ - сопоставление тега и проекта, POST запрос формата
-{
-    "project_id": 4,
-    "requirement_id": 2
-}
+    {
+        "id": 67,
+        "project_id": 13,
+        "student_id": 19,
+        "status": "Заявка отменена"
+    }
+
+* requirements_stack_create/ - сопоставление тега и проекта, 
+POST запрос формата
+
+    {
+        "project_id": 4,
+        "requirement_id": 2
+    }
 
 * requirements_stacks/ - список тегов по проектам, GET запрос формата 
 \[
+
     {
         "id": 2,
         "project_id": 4,
@@ -490,33 +527,39 @@ DELETE запрос формата
 
 * requirements_stacks/int:pk/ -	просмотр, редактирование, удаление конкретной связи
 GET запрос для получения информации, возвращающий объект 
-{
-    "id": 2,
-    "project_id": 4,
-    "requirement_id": 2
-}
+
+    {
+        "id": 2,
+        "project_id": 4,
+        "requirement_id": 2
+    }
 
 PUT запрос для редактирования в формате
-{
-    "project_id": 4,
-    "requirement_id": 2
-}
+
+    {
+        "project_id": 4,
+        "requirement_id": 2
+    }
 
 DELETE запрос формата
-{
-    "id": 2,
-    "project_id": 4,
-    "requirement_id": 2
-}
 
-* student_interest_create/ - создание интереса у студента, POST запрос формата
-{
-    "student_id": 18,
-    "interest_id": 11
-}
+    {
+        "id": 2,
+        "project_id": 4,
+        "requirement_id": 2
+    }
+
+* student_interest_create/ - создание интереса у студента, 
+POST запрос формата
+
+    {
+        "student_id": 18,
+        "interest_id": 11
+    }
 
 * student_interests/ - список всех интересов у всех студентов, GET запрос формата 
 \[
+
     {
         "id": 112,
         "student_id": 18,
@@ -531,33 +574,39 @@ DELETE запрос формата
 
 * student_interests/int:pk/ - просмотр конкретной связи
 GET запрос для получения информации, возвращающий объект 
-{
-    "id": 112,
-    "student_id": 18,
-    "interest_id": 11
-}
+
+    {
+        "id": 112,
+        "student_id": 18,
+        "interest_id": 11
+    }
 
 PUT запрос для редактирования в формате
-{
-    "student_id": 18,
-    "interest_id": 11
-}
+
+    {
+        "student_id": 18,
+        "interest_id": 11
+    }
 
 DELETE запрос формата
-{
-    "id": 112,
-    "student_id": 18,
-    "interest_id": 11
-}
 
-* suggestions_create/ -	создание рекомендации, POST запрос формата
-{
-    "project_id": 8,
-    "student_id": 19
-}
+    {
+        "id": 112,
+        "student_id": 18,
+        "interest_id": 11
+    }
+
+* suggestions_create/ -	создание рекомендации, 
+POST запрос формата
+
+    {
+        "project_id": 8,
+        "student_id": 19
+    }
 
 * suggestions/ - просмотр всех рекомендаций, GET запрос формата 
 \[
+
     {
         "id": 128,
         "project_id": 8,
@@ -571,29 +620,34 @@ DELETE запрос формата
 ]
 
 * suggestions/int:pk/ -	просмотр, редактирование, удаление конкретной рекомендации 
+
 GET запрос для получения информации, возвращающий объект 
-{
-    "id": 128,
-    "project_id": 8,
-    "student_id": 19
-}
+
+    {
+        "id": 128,
+        "project_id": 8,
+        "student_id": 19
+    }
 
 PUT запрос для редактирования в формате
-{
-    "project_id": 8,
-    "student_id": 19
-}
+
+    {
+        "project_id": 8,
+        "student_id": 19
+    }
 
 DELETE запрос формата
-{
-    "id": 128,
-    "project_id": 8,
-    "student_id": 19
-}
+
+    {
+        "id": 128,
+        "project_id": 8,
+        "student_id": 19
+    }
 
 ##### Срезы:
 * requirements_by_project/int:pk/ -	список тегов-требований по конкретному проекту, GET запрос формата
 \[
+
     {
         "project_id": 4,
         "id": 2,
@@ -608,6 +662,7 @@ DELETE запрос формата
 
 * applications_by_student/int:pk/ -	список заявок по конкретному студенту, GET запрос формата
 \[
+
     {
         "id": 5,
         "title": "Клиент-серверное мобильное приложение для планирования дедлайнов на платформе Android",
@@ -636,6 +691,7 @@ DELETE запрос формата
 
 * interests_by_student/int:pk/ - список тегов-интересов по конкретному студенту, GET запрос формата
 \[
+  
     {
         "id": 18,
         "interest_id": 11,
@@ -650,6 +706,7 @@ DELETE запрос формата
 
 * information_by_student/int:pk/ -	подробная информация по конкретному студенту, GET запрос формата
 \[
+  
     {
         "id": 18,
         "email": "ndzubareva@edu.hse.ru",
