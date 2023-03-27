@@ -3,6 +3,7 @@ from server import views
 from .views import technical_requirementsCreate, technical_requirementsList, technical_requirementsDetail
 from .views import projectCreate, projectList, projectDetail
 from .views import requirements_stackCreate, requirements_stackList, requirements_stackDetail
+from .views import suggestionsCreate, suggestionsList, suggestionsDetail
 from .views import applicationCreate, applicationList, applicationDetail
 from .views import studentCreate, studentList, studentDetail
 from .views import student_infoCreate, student_infoList, student_infoDetail
@@ -11,6 +12,8 @@ from .views import student_applicationsDetail
 from .views import student_informationDetail
 from .views import student_interests_listDetail
 from .views import project_requirementsDetail
+from .views import student_suggestionsDetail
+from .views import usernameDetail
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.conf import settings
@@ -26,10 +29,12 @@ urlpatterns = [
     path('requirements_stack_create/', requirements_stackCreate.as_view()),
     path('requirements_stacks/', requirements_stackList.as_view()),
     path('requirements_stacks/<int:pk>/', requirements_stackDetail.as_view()),
+    path('suggestions_create/', suggestionsCreate.as_view()),
+    path('suggestions/', suggestionsList.as_view()),
+    path('suggestions/<int:pk>/', suggestionsDetail.as_view()),
     path('application_create/', applicationCreate.as_view()),
     path('applications/', applicationList.as_view()),
     path('applications/<int:pk>/', applicationDetail.as_view()),
-  #  path('student_create/', studentCreate.as_view()),
     path('students/', studentList.as_view()),
     path('students/<int:pk>/', studentDetail.as_view()),
     path('student_info_create/', student_infoCreate.as_view()),
@@ -42,8 +47,12 @@ urlpatterns = [
     path('information_by_student/<int:pk>/', student_informationDetail.as_view()),
     path('interests_by_student/<int:pk>/', student_interests_listDetail.as_view()),
     path('student_interests/<int:pk>/', student_interestDetail.as_view()),
+    path('student_suggestions/<int:pk>/', student_suggestionsDetail.as_view()),
     path('login/', obtain_auth_token, name='login'),
     path('api-auth/', include('rest_framework.urls')),
+    path('hse-auth/', studentList.as_view()),#change view
+    path('', views.homepage, name='homepage'),
+    path('get_username', usernameDetail.as_view()),
 ]
 
 format_suffix_patterns(urlpatterns)

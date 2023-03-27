@@ -14,8 +14,8 @@ class project(models.Model):
     project_type = models.CharField("project_type", max_length=20)
     supervisor = models.CharField("supervisor", max_length=100, default = "")
     number_of_students = models.IntegerField("number_of_students")
-    submission_deadline = models.DateField("submission_deadline")
-    application_deadline = models.DateField("application_deadline")
+    submission_deadline = models.CharField("submission_deadline", max_length = 20)
+    application_deadline = models.CharField("application_deadline", max_length = 20)
     application_form = models.CharField("application_form", max_length=255)
     status = models.CharField("status", max_length=20)
     
@@ -39,6 +39,14 @@ class application(models.Model):
     class Meta:
         managed = False
         db_table='application'
+        
+class suggestions(models.Model):
+    student_id = models.IntegerField("student_id")
+    project_id = models.IntegerField("project_id")
+    
+    class Meta:
+        managed = False
+        db_table='suggestions'
     
 class student(models.Model):
     email = models.CharField("email", max_length=255)
@@ -74,15 +82,32 @@ class student_applications(models.Model):
     project_type = models.CharField("project_type", max_length=20)
     supervisor          = models.CharField("supervisor", max_length=255, default = "")
     number_of_students = models.IntegerField("number_of_students")
-    submission_deadline = models.DateField("submission_deadline")
-    application_deadline = models.DateField("application_deadline")
+    submission_deadline = models.CharField("submission_deadline", max_length=20)
+    application_deadline = models.CharField("application_deadline", max_length=20)
+    application_form = models.CharField("application_form", max_length=255)
+    status = models.CharField("status", max_length=20)
+    student_id =  models.IntegerField("student_id", primary_key = True)
+    id =  models.IntegerField("project_id")
+    
+    class Meta:
+        managed = False
+        db_table='student_applications'
+        
+class student_suggestions(models.Model):
+    title   = models.CharField("title", max_length=255)
+    description = models.CharField("description", max_length=255)
+    project_type = models.CharField("project_type", max_length=20)
+    supervisor          = models.CharField("supervisor", max_length=255, default = "")
+    number_of_students = models.IntegerField("number_of_students")
+    submission_deadline = models.CharField("submission_deadline", max_length=20)
+    application_deadline = models.CharField("application_deadline", max_length=20)
     application_form = models.CharField("application_form", max_length=255)
     status = models.CharField("status", max_length=20)
     student_id =  models.IntegerField("student_id", primary_key = True)
     
     class Meta:
         managed = False
-        db_table='student_applications'
+        db_table='student_suggestions'
         
 class project_requirements(models.Model):
     project_id   = models.IntegerField("project_id", primary_key = True)

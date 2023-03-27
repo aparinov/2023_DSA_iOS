@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8000'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,8 +40,33 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'server'
+    'server',
+    'django_extensions',
+
+    # Make sure to add these required apps
+    'django.contrib.sites',
+	  # Django-allauth apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # Social/third party login provider for Digital Ocean
+   # 'allauth.socialaccount.providers.digitalocean',
+    'allauth.socialaccount.providers.odnoklassniki',
+    'allauth.socialaccount.providers.vk',
+    'allauth.socialaccount.providers.zoom',
+    'allauth.socialaccount.providers.yandex',
+    'provider',
+    
+
+    'django.core',
+
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'yandex': {
+    'SCOPES': ['email'],
+    }  
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -83,10 +110,21 @@ DATABASES = {
         'USER': 'dsaios2023',
         'PASSWORD': 'dsaiosHSE2023',
         'HOST': '84.201.135.211',
-        'PORT': '5432',
+        'PORT': '5430',
     }
 }
 
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+	  'allauth.account.auth_backends.AuthenticationBackend',
+    ]
+    
+LOGIN_REDIRECT_URL = 'homepage'
+LOGOUT_REDIRECT_URL = 'homepage'
+#OAUTH_SERVER_BASEURL = 'https://auth.hse.ru/adfs/oauth2/authorize/?client_id=35db5abd-b262-4923-9d0e-00c56140be41&redirect_uri=https://lk.hse.ru/api/adfs-auth&response_mode=form_post&response_type=code'
+
+SITE_ID =2
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

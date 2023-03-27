@@ -10,8 +10,12 @@ from .models import student_applications
 from .models import student_information
 from .models import student_interests_list
 from .models import project_requirements
+from .models import suggestions
+from .models import student_suggestions
 from server.models import *
 from django.contrib.auth.models import User
+from django.conf import settings
+from rest_framework.exceptions import AuthenticationFailed
 
 class technical_requirementsSerializer(serializers.ModelSerializer):
 
@@ -30,6 +34,12 @@ class requirements_stackSerializer(serializers.ModelSerializer):
     class Meta:
         model = requirements_stack
         fields = ['id', 'project_id', 'requirement_id']
+        
+class suggestionsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = suggestions
+        fields = ['id', 'project_id', 'student_id']
         
 class student_interestSerializer(serializers.ModelSerializer):
 
@@ -56,6 +66,12 @@ class student_infoSerializer(serializers.ModelSerializer):
         fields = ['id', 'student_id', 'name', 'group', 'faculty', 'year', 'phone_number']
         
 class student_applicationsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = student_applications
+        fields = ['id','student_id',   'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
+        
+class student_suggestionsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = student_applications
@@ -103,3 +119,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+        
+class UsernameSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = User
+        fields = ['id', 'username']
+ 

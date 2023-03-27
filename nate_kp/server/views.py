@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponse
+from django.views.generic import View
+import subprocess
+from .model import run
 from rest_framework import generics, permissions
 from .models import technical_requirements
 from .models import project
@@ -11,6 +15,8 @@ from .models import student_information
 from .models import student_interests_list
 from .models import project_requirements
 from .models import student_interests
+from .models import suggestions
+from .models import student_suggestions
 from .serializers import technical_requirementsSerializer
 from .serializers import projectSerializer
 from .serializers import requirements_stackSerializer
@@ -22,9 +28,29 @@ from .serializers import student_informationSerializer
 from .serializers import student_interests_listSerializer
 from .serializers import project_requirementsSerializer
 from .serializers import student_interestSerializer
+from .serializers import suggestionsSerializer
+from .serializers import student_suggestionsSerializer
+from .serializers import UsernameSerializer
 from server.permissions import IsOwner
 from rest_framework import serializers
+from rest_framework.generics import GenericAPIView
+from .serializers import*
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import permission_classes
 
+def homepage(request):
+    rendered =  render(request=request,template_name= 'home.html',)
+    print(rendered.content)
+    return rendered
+
+class usernameDetail(generics.ListAPIView):
+     serializer_class = UsernameSerializer
+     def get_queryset(self): 
+       return User.objects.filter(id=self.request.user.id)
+     
+    
 
 class technical_requirementsCreate(generics.CreateAPIView):
     # API endpoint that allows creation of a new customer
@@ -74,6 +100,22 @@ class requirements_stackDetail(generics.RetrieveUpdateDestroyAPIView):
     # API endpoint that returns a single customer by pk.
     queryset = requirements_stack.objects.all()
     serializer_class = requirements_stackSerializer
+    
+    
+class suggestionsCreate(generics.CreateAPIView):
+    # API endpoint that allows creation of a new customer
+    queryset = suggestions.objects.all()
+    serializer_class = suggestionsSerializer
+
+class suggestionsList(generics.ListAPIView):
+    # API endpoint that allows customer to be viewed.
+    queryset = suggestions.objects.all()
+    serializer_class = suggestionsSerializer
+
+class suggestionsDetail(generics.RetrieveUpdateDestroyAPIView):
+    # API endpoint that returns a single customer by pk.
+    queryset = suggestions.objects.all()
+    serializer_class = suggestionsSerializer
     
     
 class student_interestCreate(generics.CreateAPIView):
@@ -145,25 +187,28 @@ class student_applicationsDetail(generics.ListAPIView):
     def get_queryset(self):
       studentid = self.kwargs['pk']
       return student_applications.objects.filter(student_id = studentid)
-    #queryset = student_applications.objects.all()
 
 class student_informationDetail(generics.ListAPIView):
-    #queryset = student_information.objects.all()
     serializer_class = student_informationSerializer
     def get_queryset(self):
       studentid = self.kwargs['pk']
       return student_information.objects.filter(id = studentid)
 
 class student_interests_listDetail(generics.ListAPIView):
-    #queryset = student_interests_list.objects.all()
     serializer_class = student_interests_listSerializer
     def get_queryset(self):
       studentid = self.kwargs['pk']
       return student_interests_list.objects.filter(id = studentid)
     
 class project_requirementsDetail(generics.ListAPIView):
-    #queryset = project_requirements.objects.all()
     serializer_class = project_requirementsSerializer
     def get_queryset(self):
       projectid = self.kwargs['pk']
       return project_requirements.objects.filter(project_id = projectid)
+      
+class student_suggestionsDetail(generics.ListAPIView):
+    serializer_class = student_suggestionsSerializer
+    def get_queryset(self):
+      studentid = self.kwargs['pk']
+      run(studentid)
+      return student_suggestions.objects.filter(student_id = studentid)

@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <style>
+        h3 {text-align: center;}
+        p {text-align: center; font-size: 20pt;}
+        </style>
+    </head>
+    <body>        
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
+        <nav>
+            <div class="nav-wrapper"style="background-color: teal">
+              <a href="#" class="brand-logo">hello there</a>
+            </div>
+          </nav>
+        <div class="row">       
+          </div>
+          <div class="container text-dark mt-5">
+            <div class="row justify-content-md-center">
+              <div class="col md-5 p-3">
+                {% if user.is_authenticated%}
+                <h3>You successfully logged in as {{user.username}}. Please, exit this page via button at the top of the screen</h3>
+                <a href="http://84.201.135.211:8000/accounts/logout/">Logout</a>
+                {%else%}
+                <p>Please <a href="http://84.201.135.211:8000/accounts/login/">Login</a></p>
+                {%endif%}
+              </div>
+            </div>
+          </div>
+    </body>
+</html>
