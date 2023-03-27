@@ -599,8 +599,10 @@ DELETE запрос формата
         "interest_id": 11
     }
 
-* suggestions_create/ -	создание рекомендации, 
+* suggestions_create/ -	создание рекомендации,
+ 
 POST запрос формата
+
 
     {
         "project_id": 8,
