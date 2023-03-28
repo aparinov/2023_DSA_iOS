@@ -184,6 +184,7 @@ class student_infoDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class student_applicationsDetail(generics.ListAPIView):
     serializer_class = student_applicationsSerializer
+    # API endpoint that allows to get only objects filtered by filter - in our case, applications by the student with the given id
     def get_queryset(self):
       studentid = self.kwargs['pk']
       return student_applications.objects.filter(student_id = studentid)

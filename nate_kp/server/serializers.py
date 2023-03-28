@@ -63,19 +63,19 @@ class student_infoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = student_info
-        fields = ['id', 'student_id', 'name', 'group', 'faculty', 'year', 'phone_number']
+        fields = ['student_id', 'name', 'group', 'faculty', 'year', 'phone_number']
         
 class student_applicationsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = student_applications
-        fields = ['id','student_id',   'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
+        fields = ['id',  'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
         
 class student_suggestionsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = student_applications
-        fields = ['student_id',  'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
+        model = student_suggestions
+        fields = ['id', 'title', 'description', 'project_type', 'supervisor', 'number_of_students', 'submission_deadline', 'application_deadline', 'application_form', 'status']
         
 class student_informationSerializer(serializers.ModelSerializer):
 
