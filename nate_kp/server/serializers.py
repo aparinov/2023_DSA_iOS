@@ -63,7 +63,7 @@ class student_infoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = student_info
-        fields = ['id', 'student_id', 'name', 'group', 'faculty', 'year', 'phone_number']
+        fields = ['student_id', 'name', 'group', 'faculty', 'year', 'phone_number']
         
 class student_applicationsSerializer(serializers.ModelSerializer):
 

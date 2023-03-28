@@ -57,7 +57,7 @@ class student(models.Model):
 
 
 class student_info(models.Model):
-    student_id = models.IntegerField("student_id")
+    student_id = models.IntegerField("student_id", primary_key = True)
     name = models.CharField("name", max_length=255)
     group = models.CharField("group", max_length=10)
     year =models.IntegerField("year")
